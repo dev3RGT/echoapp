@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>Echo — Messaging</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -22,9 +22,10 @@
   --green:#4ade80;
   --rp:999px;--rl:28px;--rm:18px;--rs:12px;
   --fd:'Syne',sans-serif;--fb:'Inter',sans-serif;
-  --sw:340px;--hh:62px;
+  --sw:340px;--hh:62px;--bnh:64px;
   --spring:cubic-bezier(.34,1.56,.64,1);
   --out:cubic-bezier(.16,1,.3,1);
+  --sab:env(safe-area-inset-bottom,0px);
 }
 html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);font-size:15px;-webkit-font-smoothing:antialiased;overflow:hidden}
 button{cursor:pointer;border:none;background:none;font-family:var(--fb);color:inherit}
@@ -43,6 +44,7 @@ img{display:block}
 @keyframes msgIn{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes dot{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
 @keyframes shimmer{0%,100%{opacity:.35}50%{opacity:.85}}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
 /* ════════════ SPLASH ════════════ */
 #splash{
@@ -80,13 +82,14 @@ img{display:block}
 .ab1{position:absolute;width:480px;height:480px;background:rgba(255,255,255,.03);border-radius:50%;filter:blur(90px);top:-100px;left:-130px;animation:blob 14s ease-in-out infinite}
 .ab2{position:absolute;width:320px;height:320px;background:rgba(255,255,255,.025);border-radius:50%;filter:blur(70px);bottom:-40px;right:-60px;animation:blob 10s ease-in-out infinite reverse}
 .mock{background:rgba(255,255,255,.04);border:1px solid var(--b2);border-radius:var(--rl);padding:18px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;margin-bottom:44px;animation:slideUp .7s var(--out) .4s both}
-.mm{display:flex;gap:8px;align-items:flex-end}.mm.o{flex-direction:row-reverse}
-.mav{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.12);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:700;font-size:.65rem}
-.mb{padding:7px 13px;border-radius:var(--rp);font-size:.76rem;line-height:1.5;max-width:78%}
-.mm.i .mb{background:rgba(255,255,255,.07);border:1px solid var(--b2)}
-.mm.o .mb{background:var(--w);color:var(--bg)}
-.mt{font-size:.6rem;color:var(--wd);margin-top:2px}
-.mm.o .mt{text-align:right}
+.mock-row{display:flex}
+.mock-row.right{justify-content:flex-end}
+.mock-bub{height:30px;border-radius:var(--rp);background:rgba(255,255,255,.07);border:1px solid var(--b2);animation:shimmer 2.4s ease-in-out infinite}
+.mock-row.right .mock-bub{background:rgba(255,255,255,.13)}
+.mock-bub.w1{width:72%}
+.mock-bub.w2{width:58%;animation-delay:.2s}
+.mock-bub.w3{width:84%;animation-delay:.4s}
+.mock-bub.w4{width:46%;animation-delay:.6s}
 .lg-h{font-family:var(--fd);font-size:2.7rem;font-weight:800;line-height:1.1;letter-spacing:-1.5px;animation:slideUp .7s var(--out) .6s both}
 .lg-sub{margin-top:10px;color:var(--wd);font-size:.85rem;line-height:1.65;max-width:260px;animation:slideUp .7s var(--out) .72s both}
 
@@ -142,9 +145,44 @@ img{display:block}
 
 /* TABS */
 .tabs{display:flex;padding:10px 14px 0;gap:4px;flex-shrink:0;border-bottom:1px solid var(--b1)}
-.tab{flex:1;padding:9px 6px;border-radius:var(--rs) var(--rs) 0 0;font-size:.78rem;font-weight:600;color:var(--wd);cursor:pointer;transition:color .2s,background .2s;text-align:center;border-bottom:2px solid transparent}
+.tab{flex:1;padding:9px 6px;border-radius:var(--rs) var(--rs) 0 0;font-size:.78rem;font-weight:600;color:var(--wd);cursor:pointer;transition:color .2s,background .2s;text-align:center;border-bottom:2px solid transparent;display:flex;align-items:center;justify-content:center;gap:6px}
 .tab.active{color:var(--w);border-bottom-color:var(--w)}
 .tab:hover:not(.active){color:rgba(255,255,255,.75)}
+.tab-icon{display:none}
+.tab-badge{display:none}
+
+/* Bottom nav (mobile) */
+@media(max-width:750px){
+  .tabs{
+    position:fixed;left:0;right:0;bottom:0;z-index:25;
+    padding:8px 10px calc(8px + var(--sab));
+    gap:2px;
+    background:rgba(10,10,10,.88);
+    backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+    border-bottom:none;border-top:1px solid var(--b1);
+  }
+  .tab{
+    flex-direction:column;gap:3px;padding:5px 4px;
+    border-radius:var(--rm);border-bottom:none;
+    font-size:.64rem;font-weight:600;letter-spacing:.01em;
+    position:relative;
+  }
+  .tab.active{background:rgba(255,255,255,.06)}
+  .tab-icon{display:flex;width:21px;height:21px}
+  .tab-icon svg{width:100%;height:100%}
+  .tab-badge{
+    display:none;position:absolute;top:2px;right:calc(50% - 20px);
+    min-width:16px;height:16px;padding:0 4px;border-radius:var(--rp);
+    background:var(--w);color:var(--bg);font-size:.58rem;font-weight:700;
+    align-items:center;justify-content:center;
+  }
+  .tab-badge.show{display:flex}
+  /* shift app content above bottom nav */
+  .sidebar{padding-bottom:0}
+  .conv-list,.status-panel,.calls-panel{padding-bottom:calc(var(--bnh) + var(--sab) + 16px)}
+  .fab{bottom:calc(var(--bnh) + var(--sab) + 16px)}
+  #chatPane .ib-bar{padding-bottom:calc(10px + var(--sab))}
+}
 
 /* TAB PANELS */
 .tab-panel{display:none;flex:1;flex-direction:column;overflow:hidden}
@@ -187,6 +225,7 @@ img{display:block}
 .status-add-icon svg{width:18px;height:18px;color:var(--wd)}
 .status-label{font-size:.85rem;font-weight:600}
 .status-sub{font-size:.73rem;color:var(--wd)}
+.status-section-label{padding:16px 12px 8px;font-size:.7rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.25)}
 
 /* calls tab */
 .calls-panel{display:flex;flex-direction:column;gap:1px;padding:8px}
@@ -280,6 +319,7 @@ img{display:block}
 .overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;animation:fadeIn .2s ease}
 .overlay.show{display:flex}
 .modal{background:rgba(18,18,18,.95);border:1px solid var(--b2);border-radius:var(--rl);padding:26px 22px;width:90%;max-width:360px;animation:popIn .3s var(--spring);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px)}
+.sheet-handle{display:none}
 .m-title{font-family:var(--fd);font-size:1.15rem;font-weight:800;margin-bottom:5px}
 .m-sub{font-size:.78rem;color:var(--wd);margin-bottom:18px}
 .m-inp{width:100%;padding:11px 15px;background:rgba(255,255,255,.06);border:1px solid var(--b2);border-radius:var(--rp);color:var(--w);font-size:.84rem;outline:none;margin-bottom:10px;transition:border-color .2s}
@@ -291,11 +331,25 @@ img{display:block}
 .btn-s{padding:8px 20px;border-radius:var(--rp);background:var(--w);color:var(--bg);font-size:.8rem;font-weight:600;transition:transform .15s var(--spring)}
 .btn-s:hover{transform:scale(1.04)}
 
+/* Bottom sheets on mobile — overlay-based modals slide up from the bottom edge */
+@media(max-width:750px){
+  .overlay{align-items:flex-end;justify-content:stretch;background:rgba(0,0,0,.6)}
+  .overlay .modal{
+    width:100%;max-width:none;border-radius:24px 24px 0 0;
+    padding:10px 18px calc(22px + var(--sab));
+    animation:sheetUp .32s var(--out);
+    border-bottom:none;
+  }
+  .sheet-handle{display:block;width:36px;height:4px;border-radius:99px;background:rgba(255,255,255,.22);margin:2px auto 16px}
+}
+
 /* toast */
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(255,255,255,.1);border:1px solid var(--b2);border-radius:var(--rp);padding:9px 20px;font-size:.8rem;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s var(--spring);z-index:500;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* profile popover */
+.ppop-backdrop{position:fixed;inset:0;z-index:79;background:transparent;display:none}
+.ppop-backdrop.show{display:block}
 .ppop{position:fixed;top:66px;left:14px;width:210px;background:rgba(14,14,14,.96);border:1px solid var(--b2);border-radius:var(--rl);padding:14px;z-index:80;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);animation:popIn .25s var(--spring);display:none}
 .ppop.show{display:block}
 .ppop-av{width:48px;height:48px;border-radius:50%;margin:0 auto 9px;border:2px solid var(--b2);overflow:hidden;background:var(--s2);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:700;font-size:1rem}
@@ -308,6 +362,19 @@ img{display:block}
 .pp-btn svg{width:14px;height:14px}
 .pp-btn.danger{color:#f87171}
 .pp-btn.danger:hover{background:rgba(248,113,113,.1)}
+
+@media(max-width:750px){
+  .ppop-backdrop.show{background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
+  .ppop{
+    top:auto;left:0;bottom:0;width:100%;
+    border-radius:24px 24px 0 0;
+    padding:10px 18px calc(22px + var(--sab));
+    animation:sheetUp .32s var(--out);
+  }
+  .ppop-av{width:56px;height:56px;font-size:1.2rem}
+  .pp-btn{padding:11px 10px;font-size:.86rem}
+  .pp-btn svg{width:16px;height:16px}
+}
 
 /* spinner */
 .spin{width:18px;height:18px;border:2px solid rgba(0,0,0,.15);border-top-color:var(--bg);border-radius:50%;animation:spin .65s linear infinite;display:inline-block}
@@ -338,16 +405,17 @@ img{display:block}
     <!-- Art -->
     <div class="lg-art">
       <div class="ab1"></div><div class="ab2"></div>
-      <div class="mock">
-        <div class="mm i"><div class="mav">A</div><div><div class="mb">Hey, free tonight? 👋</div><div class="mt">08:42</div></div></div>
-        <div class="mm o"><div><div class="mb">Yeah! What's the plan? 🎉</div><div class="mt">08:44</div></div></div>
-        <div class="mm i"><div class="mav">A</div><div><div class="mb">Dinner at 8 — I'll send details</div><div class="mt">08:45</div></div></div>
-        <div class="mm o"><div><div class="mb">Perfect, see you there ✨</div><div class="mt">08:46</div></div></div>
+      <div class="mock" aria-hidden="true">
+        <div class="mock-row"><div class="mock-bub w1"></div></div>
+        <div class="mock-row right"><div class="mock-bub w2"></div></div>
+        <div class="mock-row"><div class="mock-bub w3"></div></div>
+        <div class="mock-row right"><div class="mock-bub w4"></div></div>
       </div>
       <div class="lg-h">Talk.<br/>Simply.</div>
       <div class="lg-sub">Echo keeps your conversations clean, fast, and always encrypted.</div>
     </div>
     <!-- Form -->
+    
     <div class="lg-form">
       <div class="lg-logo">
         <div class="lg-logo-icon"><svg viewBox="0 0 24 24" fill="#080808"><path d="M20 2H4c-1.103 0-2 .897-2 2v18l4-4h14c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2z"/></svg></div>
@@ -386,9 +454,21 @@ img{display:block}
 
     <!-- Tabs -->
     <div class="tabs">
-      <div class="tab active" data-tab="chats">Chats</div>
-      <div class="tab" data-tab="status">Status</div>
-      <div class="tab" data-tab="calls">Calls</div>
+      <div class="tab active" data-tab="chats">
+        <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+        <span class="tab-label">Chats</span>
+        <span class="tab-badge" id="navBadgeChats"></span>
+      </div>
+      <div class="tab" data-tab="status">
+        <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+        <span class="tab-label">Status</span>
+        <span class="tab-badge" id="navBadgeStatus"></span>
+      </div>
+      <div class="tab" data-tab="calls">
+        <span class="tab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.73a16 16 0 0 0 6.23 6.29l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+        <span class="tab-label">Calls</span>
+        <span class="tab-badge" id="navBadgeCalls"></span>
+      </div>
     </div>
 
     <!-- CHATS TAB -->
@@ -410,18 +490,15 @@ img{display:block}
     <!-- STATUS TAB -->
     <div class="tab-panel" id="tab-status">
       <div class="status-panel">
-        <div class="status-add">
-          <div class="status-add-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-          <div><div class="status-label">My status</div><div class="status-sub">Tap to add a status update</div></div>
+        <div class="status-add" id="myStatusBtn">
+          <div class="status-add-icon" id="myStatusIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div><div class="status-label" id="myStatusLabel">My status</div><div class="status-sub" id="myStatusSub">Tap to add a status update</div></div>
         </div>
-        <div style="padding:16px 12px 8px;font-size:.7rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.25)">Recent updates</div>
-        <div class="status-add">
-          <div class="status-add-icon" style="background:rgba(255,255,255,.08);border:none"><span style="font-family:var(--fd);font-weight:700;font-size:.85rem">K</span></div>
-          <div><div class="status-label">Keona</div><div class="status-sub">Today at 09:14</div></div>
-        </div>
-        <div class="status-add">
-          <div class="status-add-icon" style="background:rgba(255,255,255,.06);border:none"><span style="font-family:var(--fd);font-weight:700;font-size:.85rem">M</span></div>
-          <div><div class="status-label">Marcus</div><div class="status-sub">Today at 08:32</div></div>
+        <div class="status-section-label">Recent updates</div>
+        <div id="statusList"></div>
+        <div class="empty-state" id="statusEmpty" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          <div><strong>No updates yet</strong><p>When your contacts post a status, it'll show up here</p></div>
         </div>
       </div>
     </div>
@@ -429,22 +506,11 @@ img{display:block}
     <!-- CALLS TAB -->
     <div class="tab-panel" id="tab-calls">
       <div class="calls-panel">
-        <div style="padding:10px 4px 6px;font-size:.7rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.25)">Recent</div>
-        <div class="call-item">
-          <div class="call-av">K</div>
-          <div class="call-info">
-            <div class="call-name">Keona</div>
-            <div class="call-meta"><span class="call-type">↙ Incoming</span> · Today 09:15</div>
-          </div>
-          <button class="call-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.73a16 16 0 0 0 6.23 6.29l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
-        </div>
-        <div class="call-item">
-          <div class="call-av">M</div>
-          <div class="call-info">
-            <div class="call-name">Marcus</div>
-            <div class="call-meta"><span class="call-type missed">↗ Missed</span> · Yesterday</div>
-          </div>
-          <button class="call-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.73a16 16 0 0 0 6.23 6.29l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+        <div class="status-section-label" style="padding:10px 4px 6px">Recent</div>
+        <div id="callsList"></div>
+        <div class="empty-state" id="callsEmpty" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.73a16 16 0 0 0 6.23 6.29l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <div><strong>No calls yet</strong><p>Voice and video calls you make or receive will appear here</p></div>
         </div>
       </div>
     </div>
@@ -499,20 +565,25 @@ img{display:block}
   </div>
 </div>
 
+<!-- Profile popover backdrop (mobile bottom-sheet scrim) -->
+<div class="ppop-backdrop" id="ppopBackdrop"></div>
+
 <!-- Profile popover -->
 <div class="ppop" id="ppop">
+  <div class="sheet-handle"></div>
   <div class="ppop-av" id="ppopAv"></div>
   <div class="pp-name" id="ppopName">—</div>
   <div class="pp-email" id="ppopEmail">—</div>
   <div class="pp-div"></div>
-  <button class="pp-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>Edit Profile</button>
-  <button class="pp-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</button>
+  <button class="pp-btn" id="editProfileBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>Edit Profile</button>
+  <button class="pp-btn" id="settingsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</button>
   <button class="pp-btn danger" id="signOutBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
 </div>
 
 <!-- New Chat Modal -->
 <div class="overlay" id="ncModal">
   <div class="modal">
+    <div class="sheet-handle"></div>
     <div class="m-title">New Conversation</div>
     <div class="m-sub">Enter the email of the person you want to message</div>
     <input class="m-inp" type="email" id="ncEmail" placeholder="their@email.com"/>
@@ -520,6 +591,50 @@ img{display:block}
     <div class="m-acts">
       <button class="btn-g" id="ncCancel">Cancel</button>
       <button class="btn-s" id="ncConfirm">Start Chat</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="overlay" id="epModal">
+  <div class="modal">
+    <div class="sheet-handle"></div>
+    <div class="m-title">Edit Profile</div>
+    <div class="m-sub">Update your display name</div>
+    <input class="m-inp" type="text" id="epName" placeholder="Display name"/>
+    <div class="m-acts">
+      <button class="btn-g" id="epCancel">Cancel</button>
+      <button class="btn-s" id="epSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="overlay" id="setModal">
+  <div class="modal">
+    <div class="sheet-handle"></div>
+    <div class="m-title">Settings</div>
+    <div class="m-sub">Manage your notification preferences</div>
+    <button class="pp-btn" id="toggleNotifBtn" style="margin-bottom:8px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span id="notifLabel">Sound notifications: On</span>
+    </button>
+    <div class="m-acts">
+      <button class="btn-s" id="setClose" style="margin-left:auto">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Status Modal -->
+<div class="overlay" id="statusModal">
+  <div class="modal">
+    <div class="sheet-handle"></div>
+    <div class="m-title">Add Status</div>
+    <div class="m-sub">Share a quick update with your contacts</div>
+    <input class="m-inp" type="text" id="statusText" placeholder="What's on your mind?" maxlength="140"/>
+    <div class="m-acts">
+      <button class="btn-g" id="statusCancel">Cancel</button>
+      <button class="btn-s" id="statusPost">Post</button>
     </div>
   </div>
 </div>
@@ -563,6 +678,20 @@ let unsubMsgs  = null;   // fn to detach messages listener
 let unsubConvs = null;   // fn to detach convs listener
 let pendingFile= null;
 let convCache  = {};
+let unsubMyStatus = null;
+let statusContactUnsubs = [];
+let unsubCalls = null;
+let statusTabLoaded = false;
+let callsTabLoaded  = false;
+let soundNotifs = (localStorage_safe('echo_sound_notifs') !== '0');
+
+// localStorage may be unavailable in some sandboxed contexts — guard every access
+function localStorage_safe(key, val){
+  try{
+    if(val===undefined) return localStorage.getItem(key);
+    localStorage.setItem(key,val); return val;
+  }catch(e){ return val===undefined ? null : val; }
+}
 
 /* ══════════════════════════════════════════════════
    UTILS
@@ -612,15 +741,16 @@ setTimeout(()=>{
 /* ══════════════════════════════════════════════════
    TABS
 ══════════════════════════════════════════════════ */
+function switchTab(tabName){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tabName));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active', p.id==='tab-'+tabName));
+  // show/hide FAB only on chats tab
+  $('fabBtn').style.display = tabName==='chats' ? '' : 'none';
+  if(tabName==='status') loadStatusTab();
+  if(tabName==='calls') loadCallsTab();
+}
 document.querySelectorAll('.tab').forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-    tab.classList.add('active');
-    $('tab-'+tab.dataset.tab).classList.add('active');
-    // show/hide FAB only on chats tab
-    $('fabBtn').style.display = tab.dataset.tab==='chats' ? '' : 'none';
-  });
+  tab.addEventListener('click',()=>switchTab(tab.dataset.tab));
 });
 
 /* ══════════════════════════════════════════════════
@@ -725,16 +855,27 @@ function bootApp(user){
   $('ppopName').textContent  = user.displayName||'User';
   $('ppopEmail').textContent = user.email;
 
+  $('notifLabel').textContent = 'Sound notifications: '+(soundNotifs?'On':'Off');
+
   gBtnReset();
   loadConversations();
+  watchMyStatus();
+  statusTabLoaded=false; callsTabLoaded=false;
 }
 
 function teardown(){
   if(unsubMsgs)  { unsubMsgs();  unsubMsgs=null; }
   if(unsubConvs) { unsubConvs(); unsubConvs=null; }
+  if(unsubMyStatus){ unsubMyStatus(); unsubMyStatus=null; }
+  if(unsubCalls){ unsubCalls(); unsubCalls=null; }
+  statusContactUnsubs.forEach(fn=>fn());
+  statusContactUnsubs=[];
   activeCid=null; convCache={};
   $('convList').innerHTML='';
   const ce=$('convEmpty'); if(ce)$('convList').appendChild(ce);
+  $('statusList').innerHTML='';
+  $('callsList').innerHTML='';
+  statusTabLoaded=false; callsTabLoaded=false;
   showPlaceholder();
 }
 
@@ -839,6 +980,185 @@ function renderConvList(items){
 $('searchInput').addEventListener('input',()=>{
   renderConvList(Object.values(convCache).sort((a,b)=>(b.lastAt||0)-(a.lastAt||0)));
 });
+
+/* ══════════════════════════════════════════════════
+   STATUS — real-time, backed by db.ref('status/{uid}')
+   A status is a single short text update with a timestamp.
+   It's treated as expired after 24h, same as most status/story features.
+══════════════════════════════════════════════════ */
+const STATUS_TTL = 24*60*60*1000;
+
+function watchMyStatus(){
+  if(!ME) return;
+  if(unsubMyStatus) unsubMyStatus();
+  const ref = db.ref('status/'+ME.uid);
+  const handler = ref.on('value', snap=>{
+    const d = snap.val();
+    const icon = $('myStatusIcon');
+    if(d && d.text && (Date.now()-(d.ts||0) < STATUS_TTL)){
+      icon.style.background='rgba(255,255,255,.1)';
+      icon.style.border='none';
+      icon.innerHTML = '';
+      icon.textContent = initials(ME.displayName||ME.email);
+      $('myStatusLabel').textContent = 'My status';
+      $('myStatusSub').textContent = esc(d.text).slice(0,40)+(d.text.length>40?'…':'');
+    } else {
+      icon.style.background='';
+      icon.style.border='';
+      icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+      $('myStatusLabel').textContent = 'My status';
+      $('myStatusSub').textContent = 'Tap to add a status update';
+    }
+  }, err=>console.error('Status watch error:', err.message));
+  unsubMyStatus = ()=>ref.off('value', handler);
+}
+
+$('myStatusBtn').addEventListener('click', ()=>{
+  $('statusModal').classList.add('show');
+  $('statusText').focus();
+});
+$('statusCancel').addEventListener('click', ()=>$('statusModal').classList.remove('show'));
+$('statusModal').addEventListener('click', e=>{ if(e.target===$('statusModal')) $('statusModal').classList.remove('show'); });
+$('statusPost').addEventListener('click', async ()=>{
+  const text = ($('statusText').value||'').trim();
+  if(!text){ toast('Write something first'); return; }
+  try{
+    await db.ref('status/'+ME.uid).set({
+      name: ME.displayName||ME.email,
+      photo: ME.photoURL||'',
+      text,
+      ts: firebase.database.ServerValue.TIMESTAMP
+    });
+    $('statusModal').classList.remove('show');
+    $('statusText').value='';
+    toast('Status posted ✓');
+  }catch(e){ toast('Could not post status: '+e.message); }
+});
+
+// Loads + live-watches statuses from everyone the user has an open conversation with.
+function loadStatusTab(){
+  if(statusTabLoaded) return;
+  statusTabLoaded = true;
+
+  statusContactUnsubs.forEach(fn=>fn());
+  statusContactUnsubs=[];
+
+  const contactIds = Object.values(convCache)
+    .map(c => Object.keys(c.members||{}).find(id=>id!==ME.uid))
+    .filter(Boolean);
+
+  const list = $('statusList');
+  const empty = $('statusEmpty');
+  list.innerHTML='';
+
+  if(contactIds.length===0){ empty.style.display=''; return; }
+
+  const rowEls = {};
+  function refreshEmptyState(){
+    const anyVisible = Object.values(rowEls).some(r=>r&&r.isConnected);
+    empty.style.display = anyVisible ? 'none' : '';
+  }
+
+  contactIds.forEach(otherId=>{
+    const ref = db.ref('status/'+otherId);
+    const handler = ref.on('value', snap=>{
+      const d = snap.val();
+      const existing = rowEls[otherId];
+      if(existing) existing.remove();
+
+      if(!d || !d.text || (Date.now()-(d.ts||0) >= STATUS_TTL)){
+        rowEls[otherId]=null;
+        refreshEmptyState();
+        return;
+      }
+
+      const row = el('div','status-add');
+      const av = el('div','status-add-icon');
+      av.style.border='none';
+      setAvatar(av, d.name, d.photo);
+      av.style.background='rgba(255,255,255,.08)';
+      row.appendChild(av);
+      const meta = el('div');
+      meta.innerHTML = `<div class="status-label">${esc(d.name||'Unknown')}</div><div class="status-sub">${fmtConvTime(d.ts)}</div>`;
+      row.appendChild(meta);
+      row.title = d.text;
+      list.appendChild(row);
+      rowEls[otherId]=row;
+      refreshEmptyState();
+    }, err=>console.error('Status load error:', err.message));
+    statusContactUnsubs.push(()=>ref.off('value',handler));
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   CALLS — real call-log entries written when a user
+   taps the voice/video call button. Backed by db.ref('calls/{uid}').
+   This is a logging/signaling layer; actual audio/video transport
+   is out of scope without a WebRTC backend.
+══════════════════════════════════════════════════ */
+function loadCallsTab(){
+  if(callsTabLoaded) return;
+  callsTabLoaded = true;
+
+  if(unsubCalls) unsubCalls();
+  const ref = db.ref('calls/'+ME.uid).limitToLast(50);
+  const list = $('callsList');
+  const empty = $('callsEmpty');
+
+  const handler = ref.on('value', snap=>{
+    list.innerHTML='';
+    const items=[];
+    snap.forEach(child=>{ items.push({_id:child.key, ...child.val()}); });
+    items.sort((a,b)=>(b.ts||0)-(a.ts||0));
+
+    if(items.length===0){ empty.style.display=''; return; }
+    empty.style.display='none';
+
+    items.forEach(c=>{
+      const row = el('div','call-item');
+      const arrow = c.direction==='outgoing' ? '↗' : '↙';
+      const label = c.direction==='missed' ? 'Missed' : (c.direction==='outgoing' ? 'Outgoing' : 'Incoming');
+      const typeClass = c.direction==='missed' ? 'missed' : '';
+      row.innerHTML = `
+        <div class="call-av" id="cl_${c._id}">${initials(c.otherName)}</div>
+        <div class="call-info">
+          <div class="call-name">${esc(c.otherName||'Unknown')}</div>
+          <div class="call-meta"><span class="call-type ${typeClass}">${arrow} ${label} · ${c.type==='video'?'Video':'Voice'}</span> · ${fmtConvTime(c.ts)}</div>
+        </div>
+        <button class="call-btn" title="Call back">${c.type==='video'
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.73a16 16 0 0 0 6.23 6.29l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>'}
+        </button>`;
+      row.querySelector('.call-btn').addEventListener('click', e=>{
+        e.stopPropagation();
+        placeCall(c.otherUid, c.otherName, c.type);
+      });
+      list.appendChild(row);
+
+      db.ref('users/'+c.otherUid).once('value').then(s=>{
+        const u=s.val()||{};
+        const avEl=document.getElementById('cl_'+c._id);
+        if(avEl && u.photo) setAvatar(avEl, c.otherName, u.photo);
+      });
+    });
+  }, err=>console.error('Calls load error:', err.message));
+
+  unsubCalls = ()=> ref.off('value', handler);
+}
+
+// Logs a call attempt for both participants. There's no real-time transport
+// layer here, so this records intent (an honest "ringing…" UX) rather than
+// actually connecting audio/video.
+async function placeCall(otherUid, otherName, type){
+  if(!ME || !otherUid) return;
+  const ts = firebase.database.ServerValue.TIMESTAMP;
+  try{
+    await db.ref('calls/'+ME.uid).push({ otherUid, otherName, type, direction:'outgoing', ts });
+    await db.ref('calls/'+otherUid).push({ otherUid: ME.uid, otherName: ME.displayName||ME.email, type, direction:'missed', ts });
+    toast(`Calling ${otherName}…`, 2500);
+    callsTabLoaded=false; // force refresh next time the tab is opened
+  }catch(e){ toast('Could not start call: '+e.message); }
+}
 
 /* ══════════════════════════════════════════════════
    OPEN CHAT
@@ -1074,11 +1394,7 @@ $('ncConfirm').addEventListener('click',async()=>{
   toast('Conversation ready ✓');
 
   // Switch to chats tab and open
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelector('[data-tab="chats"]').classList.add('active');
-  $('tab-chats').classList.add('active');
-  $('fabBtn').style.display='';
+  switchTab('chats');
 
   openChat(convId, targetUid, targetName);
 });
